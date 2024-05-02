@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Schedule } from "src/schedule/entity/schedule.entity";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('doctors')
@@ -11,5 +12,8 @@ export class Doctor extends BaseEntity{
 
     @Column()
     address:string
+
+    @OneToMany(() => Schedule, schedule => schedule.doctor)
+    schedules: Schedule[];
 
 }
