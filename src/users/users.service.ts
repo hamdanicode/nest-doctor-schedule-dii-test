@@ -17,12 +17,19 @@ export class UsersService {
     }
 
     async getUsers(){
-        return await this.userRepository.find()
+        return await this.userRepository.find({
+            select: {
+                username: true,
+                email: true,
+                id: true,
+            },
+        })
     }
     async getUser(id:number){
         const user= await this.userRepository.findOneBy({id:id})
         if(!user) throw new HttpException("user not found",HttpStatus.NOT_FOUND)
-        return user
+        const {password:pas,salt,...result}=user
+        return result
     }
     async createUser(createUserDto:CreateUserDto){
         try {
@@ -33,7 +40,8 @@ export class UsersService {
             userCreate.salt=await bcrypt.genSalt()
             userCreate.password=await bcrypt.hash(password,userCreate.salt)
             await userCreate.save()
-            return userCreate
+            const {password:pas,salt,...result}=userCreate
+            return result
         } catch (error) {
             // 23505
             if (error.code === '23505') {
